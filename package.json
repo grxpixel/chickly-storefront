@@ -1,5 +1,5 @@
 {
-  "name": "aisanaazstore",
+  "name": "chicly",
   "private": true,
   "sideEffects": false,
   "version": "2025.1.0",
@@ -18,11 +18,16 @@
     "@remix-run/server-runtime": "^2.15.2",
     "@shopify/hydrogen": "2025.1.0",
     "@shopify/remix-oxygen": "^2.0.10",
+    "framer-motion": "^12.15.0",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "isbot": "^3.8.0",
+    "lucide-react": "^0.487.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-owl-carousel": "^2.3.3",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",

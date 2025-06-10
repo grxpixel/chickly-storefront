@@ -334,13 +334,13 @@ button.reset:hover:not(:has(> *)) {
 * routes/__index
 * --------------------------------------------------
 */
-.featured-collection {
+/* .featured-collection {
   display: block;
   margin-bottom: 2rem;
   position: relative;
-}
+} */
 
-.featured-collection-image {
+/* .featured-collection-image {
   aspect-ratio: 1 / 1;
   @media (min-width: 45em) {
     aspect-ratio: 16 / 9;
@@ -364,7 +364,7 @@ button.reset:hover:not(:has(> *)) {
 
 .recommended-product img {
   height: auto;
-}
+} */
 
 /*
 * --------------------------------------------------
@@ -507,4 +507,36 @@ button.reset:hover:not(:has(> *)) {
 
 .account-logout {
   display: inline-block;
+}
+
+.collection-arrow{
+  padding: 3px 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+
+
+/* custom code by anand */
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.collection-text{
+ bottom: 9px;
+  width: 95%;
+  background: white;
+  padding: 6px;
+  margin: 0 8px;
+  border-radius: 8px;
 }

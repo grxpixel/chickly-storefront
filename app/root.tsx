@@ -1,5 +1,8 @@
 import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import {
   Links,
   Meta,

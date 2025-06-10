@@ -1,4 +1,4 @@
-body {
+ body {
   font-family:
     system-ui,
     -apple-system,
@@ -14,7 +14,7 @@ body {
   margin: 0;
   padding: 0;
 }
-
+/*
 h1,
 h2,
 p {
@@ -34,7 +34,7 @@ h2 {
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.4;
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
 }
 
 h4 {
@@ -70,17 +70,17 @@ hr {
 
 pre {
   white-space: pre-wrap;
-}
+}*/
 
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
-
+/* 
 body > main {
   margin: 0 1rem 1rem 1rem;
-}
+} */
 
 section {
   padding: 1rem 0;
@@ -96,26 +96,24 @@ fieldset {
   padding: 1rem;
 }
 
-form {
+/* form {
   max-width: 100%;
   @media (min-width: 768px) {
     max-width: 400px;
   }
-}
+} */
 
-input {
+/* input {
   border-radius: 4px;
   border: 1px solid #000;
   font-size: 1rem;
-  margin-bottom: 0.5rem;
-  margin-top: 0.25rem;
   padding: 0.5rem;
 }
 
 legend {
   font-weight: 600;
   margin-bottom: 0.5rem;
-}
+} *//*
 
 ul {
   list-style: none;
@@ -136,4 +134,16 @@ code {
   border-radius: 4px;
   font-family: monospace;
   padding: 0.25rem;
+} */
+
+.header-main {
+  padding: 18px 30px;
+}
+
+.no-underline:hover {
+  text-decoration: none;
+}
+
+.font-filson {
+  font-family: Filson Pro, sans-serif;
 }

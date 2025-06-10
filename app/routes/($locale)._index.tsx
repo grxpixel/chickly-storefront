@@ -2,50 +2,59 @@ import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link, type MetaFunction} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
-import type {
-  FeaturedCollectionFragment,
-  RecommendedProductsQuery,
-} from 'storefrontapi.generated';
+import HeroSlider from '~/components/HeroSlider';
+import CategorySlider from '~/components/CategorySlider';
+import CustomerReviewSlider from '~/components/CustomerReviewSlider';
+import CategoryGrid from '~/components/CategoryGrid';
+import CTABanner from '~/components/CTABanner';
+// for product card motion
+import {motion} from 'framer-motion';
+
+import type {RecommendedProductsQuery} from 'storefrontapi.generated';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Hydrogen | Home'}];
 };
 
 export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  return defer({...deferredData, ...criticalData});
+  return defer({
+    ...deferredData,
+    ...criticalData,
+  });
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
+// assign collection for featured product
 async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+  const country = context.storefront.i18n.country;
+  const language = context.storefront.i18n.language;
 
+  const [collectionOne, collectionTwo] = await Promise.all([
+    context.storefront.query(FEATURED_COLLECTION_QUERY, {
+      variables: {handle: 'tops-tunics', country, language},
+    }),
+    context.storefront.query(FEATURED_COLLECTION_QUERY, {
+      variables: {handle: 'new-in', country, language},
+    }),
+  ]);
+  // return collection
   return {
-    featuredCollection: collections.nodes[0],
+    featuredCollectionOne: collectionOne.collection,
+    featuredCollectionTwo: collectionTwo.collection,
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
 function loadDeferredData({context}: LoaderFunctionArgs) {
   const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
+    .query(RECOMMENDED_PRODUCTS_QUERY, {
+      variables: {
+        country: context.storefront.i18n.country,
+        language: context.storefront.i18n.language,
+      },
+    })
     .catch((error) => {
-      // Log query errors, but don't throw them so the page can still render
       console.error(error);
       return null;
     });
@@ -57,33 +66,143 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
+
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
+      <HeroSlider />
+      <CategorySlider />
+      <FeaturedCollection
+        collection={data.featuredCollectionOne}
+        title="Featured Product"
+      />
+
+      <FeaturedCollection
+        collection={data.featuredCollectionTwo}
+        title="New In"
+      />
+      <CTABanner/>
+      <CategoryGrid />
       <RecommendedProducts products={data.recommendedProducts} />
+      <CustomerReviewSlider />
+      
     </div>
   );
 }
-
+// featured product creation
 function FeaturedCollection({
   collection,
+  title,
 }: {
-  collection: FeaturedCollectionFragment;
+  collection: any;
+  title: string;
 }) {
   if (!collection) return null;
-  const image = collection?.image;
+
+  const collectionHandle = collection.handle;
+
   return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
-        </div>
+    <div className="flex justify-center flex-wrap flex-col items-center featured-collection px-4 py-10">
+      <h2 className="text-3xl text-center mb-12">{title}</h2>
+
+      <div className="w-full container max-w-6xl grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {collection.products.nodes.map((product: any) => {
+          const images = product.images?.nodes || [];
+
+          return (
+            <motion.div
+              key={product.id}
+              initial={{opacity: 0, y: 30}}
+              whileInView={{opacity: 1, y: 0}}
+              transition={{duration: 0.4, ease: 'easeOut'}}
+              viewport={{once: true, amount: 0.2}}
+            >
+              <Link
+                key={product.id}
+                to={`/products/${product.handle}`}
+                className="block group overflow-hidden transition"
+              >
+                <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden">
+                  <img
+                    src={images[0]?.url}
+                    alt={images[0]?.altText || product.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+                  />
+                  {images[1] && (
+                    <img
+                      src={images[1]?.url}
+                      alt={images[1]?.altText || product.title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    />
+                    
+                  )}
+                  <div className="absolute inset-0 transition-colors ">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="backdrop-blur-sm rounded py-3 px-4 text-center bg-white/100 hover:bg-white/90 transition-colors">
+                      <span className=" text-sm font-medium text-black tracking-wide">
+                        Quick View
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                </div>
+                {/* overlay on hover  */}
+                
+
+                <div className="py-4 text-center">
+  <h3 className="text-lg font-medium text-left truncate mb-1">
+    {product.title}
+  </h3>
+
+  <div className="mt-1 flex justify-start items-center gap-2">
+    {product.variants?.nodes[0]?.compareAtPrice?.amount &&
+      product.variants?.nodes[0]?.compareAtPrice?.amount !==
+        product.priceRange.minVariantPrice.amount && (
+        <>
+          <span className="text-sm text-gray-500 line-through">
+            <Money data={product.variants.nodes[0].compareAtPrice} />
+          </span>
+
+          <span className="text-base font-bold text-black">
+            <Money data={product.priceRange.minVariantPrice} />
+          </span>
+
+          {/* ✅ Discount Badge */}
+          <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
+            {Math.round(
+              (1 -
+                parseFloat(product.priceRange.minVariantPrice.amount) /
+                  parseFloat(product.variants.nodes[0].compareAtPrice.amount)) *
+                100
+            )}
+            % OFF
+          </span>
+        </>
       )}
-      <h1>{collection.title}</h1>
-    </Link>
+
+    {/* If no discount, show only price */}
+    {!product.variants?.nodes[0]?.compareAtPrice?.amount ||
+      product.variants?.nodes[0]?.compareAtPrice?.amount ===
+        product.priceRange.minVariantPrice.amount ? (
+      <span className="text-base font-bold text-black">
+        <Money data={product.priceRange.minVariantPrice} />
+      </span>
+    ) : null}
+  </div>
+</div>
+
+              </Link>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <Link
+        to={`/collections/${collectionHandle}`}
+        className="inline-block bg-red-600 text-white px-8 py-1 rounded-2xl hover:bg-red-500 transition uppercase"
+      >
+        View All
+      </Link>
+    </div>
   );
 }
 
@@ -93,58 +212,110 @@ function RecommendedProducts({
   products: Promise<RecommendedProductsQuery | null>;
 }) {
   return (
-    <div className="recommended-products">
-      <h2>Recommended Products</h2>
+    <div className="flex justify-center flex-wrap flex-col items-center featured-collection px-4">
+      <h2 className="text-3xl text-center mb-12">Product For You</h2>
+
       <Suspense fallback={<div>Loading...</div>}>
         <Await resolve={products}>
-          {(response) => (
-            <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <Link
+          {(response) => {
+            const productList = response?.products.nodes || [];
+
+            return (
+              <div className="w-full container max-w-7xl grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {productList.map((product) => {
+                  const images = product.images?.nodes || [];
+
+                  return (
+                    <motion.div
                       key={product.id}
-                      className="recommended-product"
-                      to={`/products/${product.handle}`}
+                      initial={{opacity: 0, y: 30}}
+                      whileInView={{opacity: 1, y: 0}}
+                      transition={{duration: 0.4, ease: 'easeOut'}}
+                      viewport={{once: true, amount: 0.2}}
                     >
-                      <Image
-                        data={product.images.nodes[0]}
-                        aspectRatio="1/1"
-                        sizes="(min-width: 45em) 20vw, 50vw"
-                      />
-                      <h4>{product.title}</h4>
-                      <small>
-                        <Money data={product.priceRange.minVariantPrice} />
-                      </small>
-                    </Link>
-                  ))
-                : null}
-            </div>
-          )}
+                      <Link
+                        key={product.id}
+                        to={`/products/${product.handle}`}
+                        className="block group overflow-hidden transition"
+                      >
+                        <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden">
+                          <img
+                            src={images[0]?.url}
+                            alt={images[0]?.altText || product.title}
+                            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+                          />
+                          {images[1] && (
+                            <img
+                              src={images[1]?.url}
+                              alt={images[1]?.altText || product.title}
+                              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                            />
+                          )}
+                        </div>
+
+                        <div className="py-4 text-center">
+                          <h4 className="text-sm font-medium text-left truncate mb-1">
+                            {product.title}
+                          </h4>
+                          <div className="mt-1 flex justify-start items-center gap-2">
+                            <span className="text-base font-bold text-black">
+                              <Money
+                                data={product.priceRange.minVariantPrice}
+                              />
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            );
+          }}
         </Await>
       </Suspense>
-      <br />
     </div>
   );
 }
 
 const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
-    id
-    title
-    image {
+  query FeaturedCollection(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
       id
-      url
-      altText
-      width
-      height
-    }
-    handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...FeaturedCollection
+      title
+      handle
+      products(first: 8) {
+        nodes {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          variants(first: 1) {
+            nodes {
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+            }
+          }
+          images(first: 2) {
+            nodes {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
       }
     }
   }
@@ -161,7 +332,15 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
         currencyCode
       }
     }
-    images(first: 1) {
+    variants(first: 1) {
+      nodes {
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
+    images(first: 2) {
       nodes {
         id
         url
@@ -171,7 +350,8 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
       }
     }
   }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
+
+  query RecommendedProducts($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
     products(first: 4, sortKey: UPDATED_AT, reverse: true) {
       nodes {
