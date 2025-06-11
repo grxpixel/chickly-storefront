@@ -1,7 +1,8 @@
 import type {ProductVariantFragment} from 'storefrontapi.generated';
 import {Image} from '@shopify/hydrogen';
 import {useState} from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { transform } from 'framer-motion';
 
 type GalleryImage = {
   id?: string | null;
@@ -162,7 +163,67 @@ export default function ProductImage({selectedVariantImage, images}: ProductImag
               </button>
             ))}
           </div>
+          {/* dot indicators  */}
+          <div className='flex md:hidden justify-center space-x-2 mt-4'>
+            {allImages.map((_, index)=>(
+              <button
+              key={`dot-${index}`}
+              onClick={()=>setSelectedIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${selectedIndex === index ? 'bg-red-600 w-4 ' : 'bg-gray-600 hover:bg-gray-400'}`}
+              ></button>
+            ))}
+          </div>
       </div>
+      {/* modal popup   */}
+      {modalOpen && (
+        <div className="fixed top-0 left-0 !inset-0 bg-black/95 backdrop-blur-sm"  >
+          <div className="absolute inset-0 overflow-hidden ">
+            <button onClick={closeModal}
+            className='absolute top-4 right-4 p-2 text-white hover:text-white transition-colors'
+            >
+              <X className='w-6 h-6 '/>
+              {/* Image counter  */}
+              <div className="absolute top-4 left-4 z-50">
+                <p className='text-white/80 text-sm'>
+                {modalIndex + 1} / {allImages.length}
+
+                </p>
+              </div>
+
+              <div className="w-full h-full flex items-center justify-center p-0 md:p-8"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              >
+                <div className="relative w-full h-full">
+                  {allImages.map((image,index)=>(
+                    <div
+                    key={`modal-image-${image.id || 'x'}-${index}`}
+                    className={`absolute inset-0 w-full h-full ${
+                  !isDragging
+                    ? 'transition-transform duration-300 ease-out'
+                    : 'transition-none'
+                }`}
+                style={{transform: getImagePosition(index)}}
+                    >
+                      <Image 
+                      alt={image.altText || 'Product Image'}
+                      data={image}
+                      sizes='90vw'
+                      className='max-w-full max-h-[85vh] object-contain'
+                      />
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+
+
+            </button>
+          </div>
+        </div>
+      )}
+
 
       {/* Modal Viewer */}
       {modalOpen && (
@@ -179,7 +240,7 @@ export default function ProductImage({selectedVariantImage, images}: ProductImag
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 overflow-hidden">
               {allImages.map((image, index) => (
                 <div
                   key={`modal-image-${image.id || index}`}
@@ -199,7 +260,37 @@ export default function ProductImage({selectedVariantImage, images}: ProductImag
                 </div>
               ))}
             </div>
+            {/* modal navigation  */}
+            <div className='absolute inset-0 hidden md:flex items-center justify-between px-4'>
+            <button 
+            onClick={(e)=>{
+              e.stopPropagation();
+              if(modalIndex > 0){
+                setModalIndex((prev)=> prev - 1 );
+
+              }
+            }}
+            className='bg-white/90 rounded-full p-2 hover:bg-white transition-colors cursor-pointer'
+          disabled={modalIndex === 0}
+            >
+              <ChevronLeft className='w-8 h-8'/>
+            </button>
+            <button 
+            onClick={(e)=>{
+              e.stopPropagation();
+              if(modalIndex < allImages.length -1){
+                setModalIndex((prev)=> prev + 1 );
+
+              }
+            }}
+            className='bg-white/90 rounded-full p-2 hover:bg-white transition-colors cursor-pointer'
+          disabled={modalIndex === allImages.length - 1}
+            >
+              <ChevronRight className='w-8 h-8'/>
+            </button>
           </div>
+          </div>
+
         </div>
       )}
     </>
