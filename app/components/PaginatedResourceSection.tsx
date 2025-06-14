@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Pagination} from '@shopify/hydrogen';
 
 /**
- * <PaginatedResourceSection > is a component that encapsulate how the previous and next behaviors throughout your application.
+ * <PaginatedResourceSection > is a component that encapsulates previous and next behaviors.
  */
 export function PaginatedResourceSection<NodesType>({
   connection,
@@ -22,17 +22,38 @@ export function PaginatedResourceSection<NodesType>({
 
         return (
           <div>
-            <PreviousLink>
-              {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
-            </PreviousLink>
+            {/* Previous link if needed */}
+            <div className="flex justify-center my-6">
+              <PreviousLink>
+                {isLoading ? (
+                  'Loading...'
+                ) : (
+                  <button className="px-6 py-3 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition">
+                    ↑ Load Previous
+                  </button>
+                )}
+              </PreviousLink>
+            </div>
+
+            {/* Product Grid */}
             {resourcesClassName ? (
               <div className={resourcesClassName}>{resourcesMarkup}</div>
             ) : (
               resourcesMarkup
             )}
-            <NextLink>
-              {isLoading ? 'Loading...' : <span>Load more ↓</span>}
-            </NextLink>
+
+            {/* Next Link (Load More Button) */}
+            <div className="flex justify-center my-10">
+              <NextLink>
+                {isLoading ? (
+                  'Loading...'
+                ) : (
+                  <button className="inline-block px-8 py-3 rounded-full bg-black text-white text-sm font-semibold tracking-wide shadow-lg hover:bg-gray-900 transition-colors duration-300">
+                    Load More
+                  </button>
+                )}
+              </NextLink>
+            </div>
           </div>
         );
       }}

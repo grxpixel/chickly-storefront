@@ -27,7 +27,8 @@
     "react-dom": "^18.2.0",
     "react-owl-carousel": "^2.3.3",
     "react-slick": "^0.30.3",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "use-debounce": "^10.0.5"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",

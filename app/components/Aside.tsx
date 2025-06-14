@@ -61,8 +61,8 @@ export function Aside({
       <button className="close-outside" onClick={close} />
       <aside>
         <header>
-          <h3>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
+          <h3 className='text-base font-bold font-amiri text-black/80'>{heading}</h3>
+          <button className="close text-sm reset" onClick={close} aria-label="Close">
             &times;
           </button>
         </header>

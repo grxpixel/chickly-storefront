@@ -3,16 +3,11 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
 import {Link} from '@remix-run/react';
-import {ProductPrice} from './ProductPrice';
-import {useAside} from './Aside';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
+import {useAside} from './Aside';
 
 type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
-/**
- * A single line item in the cart. It displays the product image, title, price.
- * It also provides controls to update the quantity or remove the line item.
- */
 export function CartLineItem({
   layout,
   line,
@@ -25,95 +20,72 @@ export function CartLineItem({
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
   const {close} = useAside();
 
+  const variant = selectedOptions.map(o => o.value).join(', ');
+
   return (
-    <li key={id} className="cart-line">
+    <li key={id} className="flex items-start gap-3 py-4 border-b last:border-b-0">
       {image && (
         <Image
           alt={title}
-          aspectRatio="1/1"
+          aspectRatio="3/4"
           data={image}
-          height={100}
-          loading="lazy"
-          width={100}
+          width={80}
+          height={80}
+          className="rounded object-cover"
         />
       )}
 
-      <div>
+      <div className="flex flex-col flex-1">
         <Link
           prefetch="intent"
           to={lineItemUrl}
-          onClick={() => {
-            if (layout === 'aside') {
-              close();
-            }
-          }}
+          onClick={() => { if (layout === 'aside') { close(); } }}
+          className="font-poppins text-lg leading-snug"
         >
-          <p>
-            <strong>{product.title}</strong>
-          </p>
+          {product.title}
         </Link>
-        <ProductPrice price={line?.cost?.totalAmount} />
-        <ul>
-          {selectedOptions.map((option) => (
-            <li key={option.name}>
-              <small>
-                {option.name}: {option.value}
-              </small>
-            </li>
-          ))}
-        </ul>
-        <CartLineQuantity line={line} />
+
+        <div className="text-sm font-filson text-gray-500 mb-2">{variant}</div>
+
+        <div className="flex font-filson items-center gap-2">
+          <QuantityControls line={line} />
+          <CartLineRemoveButton lineIds={[id]} disabled={!!line.isOptimistic} />
+        </div>
+      </div>
+
+      <div className="font-semibold text-black/80 font-poppins text-base whitespace-nowrap pl-3">
+        ₹{Number(line?.cost?.totalAmount?.amount ?? 0).toLocaleString('en-IN')}
       </div>
     </li>
   );
 }
 
-/**
- * Provides the controls to update the quantity of a line item in the cart.
- * These controls are disabled when the line item is new, and the server
- * hasn't yet responded that it was successfully added to the cart.
- */
-function CartLineQuantity({line}: {line: CartLine}) {
-  if (!line || typeof line?.quantity === 'undefined') return null;
+function QuantityControls({line}: {line: CartLine}) {
   const {id: lineId, quantity, isOptimistic} = line;
-  const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
-  const nextQuantity = Number((quantity + 1).toFixed(0));
+  const prevQuantity = Math.max(quantity - 1, 1);
+  const nextQuantity = quantity + 1;
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
+    <div className="flex items-center border border-black/20 rounded">
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
-          aria-label="Decrease quantity"
+          className="w-8 h-8 flex items-center justify-center text-lg"
           disabled={quantity <= 1 || !!isOptimistic}
-          name="decrease-quantity"
-          value={prevQuantity}
-        >
-          <span>&#8722; </span>
-        </button>
+        >-</button>
       </CartLineUpdateButton>
-      &nbsp;
+
+      <div className="px-3 text-sm">{quantity}</div>
+
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
-          aria-label="Increase quantity"
-          name="increase-quantity"
-          value={nextQuantity}
+          className="w-8 h-8 flex items-center justify-center text-lg"
           disabled={!!isOptimistic}
-        >
-          <span>&#43;</span>
-        </button>
+        >+</button>
       </CartLineUpdateButton>
-      &nbsp;
-      <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
 }
 
-/**
- * A button that removes a line item from the cart. It is disabled
- * when the line item is new, and the server hasn't yet responded
- * that it was successfully added to the cart.
- */
 function CartLineRemoveButton({
   lineIds,
   disabled,
@@ -127,7 +99,7 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
+      <button disabled={disabled} type="submit" className="text-xs underline text-gray-500">
         Remove
       </button>
     </CartForm>

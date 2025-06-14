@@ -1,190 +1,97 @@
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, Link, type MetaFunction} from '@remix-run/react';
-import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
-import type {ProductItemFragment} from 'storefrontapi.generated';
-import {useVariantUrl} from '~/lib/variants';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
-import {motion} from 'framer-motion';
+import {useLoaderData, useFetcher, Await} from '@remix-run/react';
+import {Suspense, useEffect, useRef, useState, useCallback} from 'react'; 
+import { collectionsLoader } from '~/components/CollectionPage/Loaders/collectionsLoader'; 
+import Filters from '~/components/CollectionPage/Filters/Filters';
+import Sort from '~/components/CollectionPage/Sort/Sort';
+import ProductCard from '~/components/CollectionPage/Product/ProductCard';
+import LoadingSpinner from '~/components/CollectionPage/Product/LoadingSpinner';
 
-export const meta: MetaFunction<typeof loader> = () => {
-  return [{title: `Hydrogen | Products`}];
-};
+export const loader = collectionsLoader;
+export const meta = () => [{title: 'All Products'}];
 
-export async function loader(args: LoaderFunctionArgs) {
-  const deferredData = loadDeferredData(args);
-  const criticalData = await loadCriticalData(args);
-  return defer({...deferredData, ...criticalData});
-}
+export default function CollectionsAllPage() {
+  const {products, discountFilters, searchParams} = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
+  const observer = useRef<IntersectionObserver>();
+  const [extraItems, setExtraItems] = useState<any[]>([]);
 
-async function loadCriticalData({context, request}: LoaderFunctionArgs) {
-  const {storefront} = context;
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
-  });
+  const lastElement = useCallback((node: Element | null, pageInfo?: any) => {
+    if (fetcher.state !== "idle") return;
+    if (observer.current) observer.current.disconnect();
 
-  const [{products}] = await Promise.all([
-    storefront.query(CATALOG_QUERY, {
-      variables: {...paginationVariables},
-    }),
-  ]);
-  return {products};
-}
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && pageInfo?.hasNextPage) {
+        const params = new URLSearchParams(searchParams);
+        params.set('after', pageInfo.endCursor);
+        fetcher.load(`?${params.toString()}`);
+      }
+    });
 
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  return {};
-}
+    if (node) observer.current.observe(node);
+  }, [fetcher, searchParams]);
 
-export default function Products() {
-  const {products} = useLoaderData<typeof loader>();
+  useEffect(() => {
+    const data = fetcher.data as any;
+    if (data?.products?.products?.nodes?.length > 0) {
+      setExtraItems(prev => [...prev, ...data.products.products.nodes]);
+    }
+  }, [fetcher.data]);
+
+  const calculateDiscount = (compareAt: number, price: number) => {
+    if (!compareAt || compareAt <= price) return 0;
+    return Math.round(((compareAt - price) / compareAt) * 100);
+  };
 
   return (
-    <div className="collection px-4 py-10">
-      <h1 className="text-3xl text-center mb-10 text-red-500">Products</h1>
-      <PaginatedResourceSection
-        connection={products}
-        resourcesClassName="w-full container max-w-7xl grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-      >
-        {({node: product, index}) => (
-          <ProductItem key={product.id} product={product} loading={index < 8 ? 'eager' : undefined} />
-        )}
-      </PaginatedResourceSection>
+    <div className="max-w-screen mx-auto px-14 py-10 flex gap-8">
+      <div className="w-72 sticky top-24 h-fit flex-col">
+        <Filters />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex justify-end mb-6">
+          <Sort />
+        </div>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <Await resolve={products}>
+            {(data: any) => {
+              // ✅ Filtering inside Await (recommended)
+              const allItems = [...data.products.nodes, ...extraItems];
+
+              const finalFilteredProducts = allItems.filter((product: any) => {
+                const variant = product.variants.nodes[0];
+                const minPrice = parseFloat(product.priceRange.minVariantPrice.amount);
+                const compareAt = variant?.compareAtPrice?.amount ? parseFloat(variant.compareAtPrice.amount) : 0;
+                const discountValue = calculateDiscount(compareAt, minPrice);
+
+                if (discountFilters?.length) {
+                  const discountMatch = discountFilters.some((d: string) => discountValue >= parseInt(d));
+                  if (!discountMatch) return false;
+                }
+
+                return true;
+              });
+
+              return (
+                <>
+                  <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {finalFilteredProducts.map((product, index) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+
+                  {data.products.pageInfo?.hasNextPage && (
+                    <div ref={(node) => lastElement(node, data.products.pageInfo)} className="flex justify-center my-10">
+                      <LoadingSpinner />
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          </Await>
+        </Suspense>
+      </div>
     </div>
   );
 }
-
-function ProductItem({
-  product,
-  loading,
-}: {
-  product: ProductItemFragment;
-  loading?: 'eager' | 'lazy';
-}) {
-  const variantUrl = useVariantUrl(product.handle);
-  const images = product.images?.nodes || [];
-
-  return (
-    <motion.div
-      key={product.id}
-      initial={{opacity: 0, y: 30}}
-      whileInView={{opacity: 1, y: 0}}
-      transition={{duration: 0.4, ease: 'easeOut'}}
-      viewport={{once: true, amount: 0.2}}
-    >
-      <Link className="block group overflow-hidden transition" prefetch="intent" to={variantUrl}>
-        <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden">
-          <img
-            src={images[0]?.url}
-            alt={images[0]?.altText || product.title}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
-            loading={loading}
-          />
-          {images[1] && (
-            <img
-              src={images[1]?.url}
-              alt={images[1]?.altText || product.title}
-              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              loading={loading}
-            />
-          )}
-
-          {/* Quick View Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-            <div className="backdrop-blur-sm rounded py-3 px-4 text-center bg-white/100 hover:bg-white/90 transition-colors">
-              <span className="text-sm font-medium text-black tracking-wide">Quick View</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="py-4 text-center">
-          <h3 className="text-lg font-medium text-left truncate mb-1">{product.title}</h3>
-
-          <div className="mt-1 flex justify-start items-center gap-2">
-            {product.priceRange.maxVariantPrice.amount !== product.priceRange.minVariantPrice.amount ? (
-              <>
-                <span className="text-sm text-gray-500 line-through">
-                  <Money data={product.priceRange.maxVariantPrice} />
-                </span>
-                <span className="text-base font-bold text-black">
-                  <Money data={product.priceRange.minVariantPrice} />
-                </span>
-                <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
-                  {Math.round(
-                    (1 -
-                      parseFloat(product.priceRange.minVariantPrice.amount) /
-                        parseFloat(product.priceRange.maxVariantPrice.amount)) *
-                      100
-                  )}
-                  % OFF
-                </span>
-              </>
-            ) : (
-              <span className="text-base font-bold text-black">
-                <Money data={product.priceRange.minVariantPrice} />
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
-    </motion.div>
-  );
-}
-
-const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
-    amount
-    currencyCode
-  }
-  fragment ProductItem on Product {
-    id
-    handle
-    title
-    featuredImage {
-      id
-      altText
-      url
-      width
-      height
-    }
-    images(first: 2) {
-      nodes {
-        id
-        url
-        altText
-        width
-        height
-      }
-    }
-    priceRange {
-      minVariantPrice {
-        ...MoneyProductItem
-      }
-      maxVariantPrice {
-        ...MoneyProductItem
-      }
-    }
-  }
-` as const;
-
-const CATALOG_QUERY = `#graphql
-  query Catalog(
-    $country: CountryCode
-    $language: LanguageCode
-    $first: Int
-    $last: Int
-    $startCursor: String
-    $endCursor: String
-  ) @inContext(country: $country, language: $language) {
-    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
-      nodes {
-        ...ProductItem
-      }
-      pageInfo {
-        hasPreviousPage
-        hasNextPage
-        startCursor
-        endCursor
-      }
-    }
-  }
-  ${PRODUCT_ITEM_FRAGMENT}
-` as const;

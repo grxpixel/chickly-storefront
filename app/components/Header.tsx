@@ -104,7 +104,7 @@ export function Header({
             to="/"
             className="text-2xl tracking-normal inline-block"
           >
-  <img src="app/assets/logo/logo.png" alt="Logo" className="inline-block w-[100px] h-auto ml-2" />
+  <img src="/app/assets/logo/logo.png" alt="Logo" className="inline-block w-[100px] h-auto ml-2" />
           </NavLink>
           <div className='flex items-center'>
               <HeaderCtas isLoggedIn={isLoggedIn} cart={cart}/>
@@ -132,7 +132,7 @@ export function Header({
               isScrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text[28px]'
             }`}
           >
-            <img src="app/assets/logo/logo.png" alt="Logo" className="inline-block w-[150px] h-auto ml-2" />
+            <img src="/app/assets/logo/logo.png" alt="Logo" className="inline-block w-[150px] h-auto ml-2" />
           </NavLink>
           {/* desktop navigation  */}
           <div className="hidden lg:flex flex-1-px-12 ">

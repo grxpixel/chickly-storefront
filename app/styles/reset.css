@@ -153,7 +153,7 @@ code {
 }
 
 .font-poppins {
-  font-family: Poppins, serif;
+  font-family: Poppins, sans-serif;
 }
 .add-to-cart-button form {
   width: 100%;
@@ -163,3 +163,12 @@ code {
 .add-to-cart-button button {
   width: 100%;
 }
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
