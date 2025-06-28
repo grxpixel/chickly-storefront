@@ -29,34 +29,6 @@ export function Header({
   const [isScrollingUp, setLastScrolly] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const {type: asideType} = useAside();
-
-  //   return (
-  //    <div>
-  //      <div
-  //         className={` overflow-hidden transition-all duration-500 ease-in-out bg-red-800 text-white ${isScrolled} `}
-  //       >
-  //         <div className="container mx-auto text-center py-2.5 px-4">
-  //           <p className="font-source text-[13px] leading-tight sm:text-sm font-light tracking-wider">20% OFF For Pre Paid Order.
-  //           </p>
-  //         </div>
-  //       </div>
-  //    <header className="sticky top-0 z-50 bg-white shadow-md px-4 py-2 flex items-center justify-between flex-wrap">
-  //   <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-  //     <strong>{shop.name}</strong>
-  //   </NavLink>
-
-  //   <HeaderMenu
-  //     menu={menu}
-  //     viewport="desktop"
-  //     primaryDomainUrl={header.shop.primaryDomain.url}
-  //     publicStoreDomain={publicStoreDomain}
-  //   />
-
-  //   <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-  // </header>
-
-  //    </div>
-  //   );
   return (
     <div
       className={`w-full z-40 transition-transform duration-500 ease-in-out 
@@ -91,34 +63,26 @@ export function Header({
         }`}
       >
         {/* Mobile Logo (550px and below) */}
-        <div
-          className={`hidden max-[550px]:block text-center border-b border-gray-100 transition-all duration-300 ease-in-out ${
-            isScrolled ? 'py-1' : 'py-2'
-          }`}
-        >
-           
-              <HeaderMenuMobileToggle />
-           
-          <NavLink
-            prefetch="intent"
-            to="/"
-            className="text-2xl tracking-normal inline-block"
-          >
-  <img src="/app/assets/logo/logo.png" alt="Logo" className="inline-block w-[100px] h-auto ml-2" />
-          </NavLink>
-          <div className='flex items-center'>
-              <HeaderCtas isLoggedIn={isLoggedIn} cart={cart}/>
-            </div>
-          {/* Header content  */}
-          <div
-            className={`flex flex-row justify-between px-4 sm:px-6 transition-all duration-300 ease-in-out ${
-              isScrolled ? 'py-3 sm:py-4' : ''
-            }`}
-          >
-            {/* mobile menu toggle  */}
-           
-          </div>
-        </div>
+        <div className={`hidden max-[550px]:flex items-center justify-between px-4 border-b border-gray-100 transition-all duration-300 ease-in-out ${isScrolled ? 'py-1' : 'py-2'}`}>
+  
+  {/* Left: Hamburger */}
+  <HeaderMenuMobileToggle />
+
+  {/* Center: Logo */}
+  <NavLink prefetch="intent" to="/" className="text-2xl tracking-normal">
+    <img src="/app/assets/logo/logo.png" alt="Logo" className="inline-block w-[100px] h-auto" />
+  </NavLink>
+
+  {/* Right: CTAs */}
+  <div className="flex items-center gap-3">
+    <NavLink prefetch="intent" to="/account">
+      <User className="w-6 h-6" />
+    </NavLink>
+
+    <CartToggle cart={cart} />
+  </div>
+</div>
+
         <div
           className={`max-[550px]:hidden header-main flex justify-between text-center border-b border-gray-100 transition-all duration-300 ease-in-out ${
             isScrolled ? 'py-1' : 'py-2'
@@ -173,45 +137,6 @@ const baseClassName = "relative no-underline transition-all duration-200 hover:t
   const desktopClassName =
     'flex items-center justify-center gap-12 text-sm uppercase ';
   const mobileClassName = 'flex flex-col px-6';
-  // return (
-  //   <nav className={className} role="navigation">
-  //     {viewport === 'mobile' && (
-  //       <NavLink
-  //         end
-  //         onClick={close}
-  //         prefetch="intent"
-  //         style={activeLinkStyle}
-  //         to="/"
-  //       >
-  //         Home
-  //       </NavLink>
-  //     )}
-  //     {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-  //       if (!item.url) return null;
-
-  //       // if the url is internal, we strip the domain
-  //       const url =
-  //         item.url.includes('myshopify.com') ||
-  //         item.url.includes(publicStoreDomain) ||
-  //         item.url.includes(primaryDomainUrl)
-  //           ? new URL(item.url).pathname
-  //           : item.url;
-  //       return (
-  //         <NavLink
-  //           className="header-menu-item"
-  //           end
-  //           key={item.id}
-  //           onClick={close}
-  //           prefetch="intent"
-  //           style={activeLinkStyle}
-  //           to={url}
-  //         >
-  //           {item.title}
-  //         </NavLink>
-  //       );
-  //     })}
-  //   </nav>
-  // );
   return (
     <nav
       className={viewport === 'desktop' ? desktopClassName : mobileClassName}
@@ -326,18 +251,6 @@ function HeaderCtas({
   cart,
 }: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
   return (
-    // <nav className="header-ctas" role="navigation">
-    //   <HeaderMenuMobileToggle />
-    //   <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-    //     <Suspense fallback="Sign in">
-    //       <Await resolve={isLoggedIn} errorElement="Sign in">
-    //         {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
-    //       </Await>
-    //     </Suspense>
-    //   </NavLink>
-    //   <SearchToggle />
-    //   <CartToggle cart={cart} />
-    // </nav>
     <nav className="flex items-center !gap-[20px] w-[150px] justify-center role='navigation">
       <SearchToggle />
       <NavLink
@@ -367,11 +280,9 @@ function HeaderMenuMobileToggle() {
       className="p-2 -ml-2 hover:text-amber-300 transition-colors duration-200"
       onClick={() => open('mobile')}
     >
-      {/* <h3>☰</h3> */}
       {/* to show hamburger in mobile view  */}
       {/* npm i lucide-react
       then improt menu form lucide-react which is above imported  */}
-
       <Menu />
     </button>
   );
@@ -380,9 +291,6 @@ function HeaderMenuMobileToggle() {
 function SearchToggle() {
   const {open} = useAside();
   return (
-    // <button className="reset" onClick={() => open('search')}>
-    //   Search
-    // </button>
     <button 
      className='p-2 cursor-pointer hover:text-red-600 transition-colors duration-200 relative 
              after:content-[""] after:absolute after:bottom-0 after:left-1/2 

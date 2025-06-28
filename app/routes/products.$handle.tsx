@@ -165,7 +165,7 @@ const reviewsData = {
         {/* 2 column grid */}
         <div className="max-w-7xl product grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* LEFT SIDE (Sticky Images) */}
-          <div className="sticky top-5 self-start">
+          <div className="md:sticky md:top-5 md:self-start">
             <ProductImage
               images={product.images.nodes.map((node) => ({
                 id: node.id,
@@ -217,7 +217,7 @@ const reviewsData = {
                     Prepay & Save!
                   </div>
                   <div className="text-sm text-black">
-                    5% OFF on all prepaid orders.
+                    20% OFF on all prepaid orders.
                   </div>
                 </div>
               </div>

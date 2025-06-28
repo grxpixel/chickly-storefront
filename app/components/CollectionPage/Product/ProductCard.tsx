@@ -19,15 +19,24 @@ export default function ProductCard({product}: {product: any}) {
           {images[1] && <img src={images[1]?.url} alt={product.title} className="absolute w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100" />}
         </div>
         <div className="py-4 text-center">
-          <h3 className="text-lg font-medium text-left truncate mb-1">{product.title}</h3>
+          <h3 className="text-sm sm:text-lg font-medium text-left truncate mb-1">{product.title}</h3>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-black"><Money data={product.priceRange.minVariantPrice} /></span>
-            {compareAt > minPrice && (
-              <>
-                <span className="text-xs text-gray-500 line-through"><Money data={{amount: compareAt.toString(), currencyCode: "INR"}} /></span>
-                <span className="text-xs bg-red-500 text-white px-1 py-0.5 rounded">{discount}% OFF</span>
-              </>
-            )}
+            <span className="sm:text-base text-sm font-bold text-black">
+  ₹{Math.round(parseFloat(product.priceRange.minVariantPrice.amount)).toLocaleString('en-IN')}
+</span>
+
+{compareAt > minPrice && (
+  <>
+    <span className="sm:text-sm text-xs text-gray-500 line-through">
+      ₹{Math.round(compareAt).toLocaleString('en-IN')}
+    </span>
+
+    <span className="bg-red-600 text-white text-[10px] sm:text-xs font-semibold px-1 sm:px-2 py-1 rounded">
+      {discount}% OFF
+    </span>
+  </>
+)}
+
           </div>
         </div>
       </Link>

@@ -8,6 +8,14 @@
   --color-light: #fff;
 }
 
+@media(max-width:782px){
+  :root {
+  --aside-width: 350px;
+  --color-dark: #c6c6c6;
+  --color-light: #fff;
+}
+}
+
 img {
   border-radius: 4px;
 }

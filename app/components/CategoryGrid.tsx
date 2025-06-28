@@ -15,8 +15,8 @@ const categories = [
 
 export default function CategoryGrid() {
   return (
-    <section className="w-full py-10 px-4">
-      <h2 className="text-3xl text-center mb-12">Shop Our Collection</h2>
+    <section className="w-full py-6 sm:py-10 sm:px-4 px-4">
+      <h2 className="sm:text-3xl text-2xl  text-center mb-6 sm:mb-12">Shop Our Collection</h2>
 
       {/* Desktop Layout */}
       <div className="hidden md:flex md:flex-wrap md:justify-center md:gap-[12px]">
@@ -44,10 +44,10 @@ export default function CategoryGrid() {
             prefetch="intent"
             className="flex flex-col items-center text-center"
           >
-            <div className="w-[100px] h-[100px] rounded-full overflow-hidden shadow bg-gray-100">
+            <div className="w-[170px] h-[170px] rounded-full overflow-hidden ">
               <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-contain" />
             </div>
-            <span className="mt-2 text-xs">{cat.name}</span>
+            <span className="mt-2 text-sm">{cat.name}</span>
           </Link>
         ))}
       </div>

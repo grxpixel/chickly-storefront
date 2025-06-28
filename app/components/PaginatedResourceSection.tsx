@@ -48,7 +48,7 @@ export function PaginatedResourceSection<NodesType>({
                 {isLoading ? (
                   'Loading...'
                 ) : (
-                  <button className="inline-block px-8 py-3 rounded-full bg-black text-white text-sm font-semibold tracking-wide shadow-lg hover:bg-gray-900 transition-colors duration-300">
+                  <button className="inline-block px-8 py-3 rounded-full bg-red-600/80 text-white text-sm font-semibold tracking-wide shadow-lg hover:bg-gray-900 transition-colors duration-300">
                     Load More
                   </button>
                 )}

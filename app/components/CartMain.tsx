@@ -25,7 +25,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const withDiscount =
     cart &&
     Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
+  const className = `flex cart-main ${withDiscount ? 'with-discount' : ''}`;
   const cartHasItems = cart?.totalQuantity! > 0;
 
   return (
@@ -45,23 +45,46 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   );
 }
 
-function CartEmpty({
-  hidden = false,
-}: {
-  hidden: boolean;
-  layout?: CartMainProps['layout'];
-}) {
+type CartEmptyProps = {
+  hidden?: boolean;
+  layout?: any; // optional, not used in this design
+};
+
+export function CartEmpty({hidden = false}: CartEmptyProps) {
   const {close} = useAside();
+
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
-      </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+    <div
+      hidden={hidden}
+      className="flex flex-col items-center justify-center h-full text-center py-20 px-6"
+    >
+      {/* Icon or image */}
+      <div className="w-full h-auto mb-6">
+        <img
+          src="/app/assets/Icons/cart.png"
+          alt="Empty Cart"
+          className="w-full h-full object-contain opacity-80"
+        />
+      </div>
+
+      {/* Heading */}
+      {/* <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-3">
+        Your bag is empty!
+      </h2> */}
+
+      {/* Subtext */}
+      {/* <p className="text-gray-600 text-base max-w-md mb-6">
+        Looks like you haven’t added anything yet. Don’t worry — your perfect pick is just a scroll away.
+      </p> */}
+
+      {/* CTA Button */}
+      <Link
+        to="/collections"
+        onClick={close}
+        prefetch="viewport"
+        className="bg-black text-white px-6 py-3 rounded-full text-sm md:text-base font-medium hover:bg-gray-900 transition-all duration-200 shadow-sm"
+      >
+        🛍️ Continue Shopping
       </Link>
     </div>
   );

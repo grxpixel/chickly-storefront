@@ -31,18 +31,22 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
   const country = context.storefront.i18n.country;
   const language = context.storefront.i18n.language;
 
-  const [collectionOne, collectionTwo] = await Promise.all([
+  const [collectionOne, collectionTwo, collectionThree] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY, {
       variables: {handle: 'tops-tunics', country, language},
     }),
     context.storefront.query(FEATURED_COLLECTION_QUERY, {
       variables: {handle: 'new-in', country, language},
     }),
+    context.storefront.query(FEATURED_COLLECTION_QUERY, {
+      variables: {handle: 'women-dresses', country, language},
+    }),
   ]);
   // return collection
   return {
     featuredCollectionOne: collectionOne.collection,
     featuredCollectionTwo: collectionTwo.collection,
+    featuredCollectionThree: collectionThree.collection,
   };
 }
 
@@ -82,7 +86,11 @@ export default function Homepage() {
       />
       <CTABanner/>
       <CategoryGrid />
-      <RecommendedProducts products={data.recommendedProducts} />
+      <FeaturedCollection
+        collection={data.featuredCollectionThree}
+        title="New In"
+      />
+      {/* <RecommendedProducts products={data.recommendedProducts} /> */}
       <CustomerReviewSlider />
       
     </div>
@@ -101,10 +109,11 @@ function FeaturedCollection({
   const collectionHandle = collection.handle;
 
   return (
-    <div className="flex justify-center flex-wrap flex-col items-center featured-collection px-4 py-10">
-      <h2 className="text-3xl text-center mb-12">{title}</h2>
+    <div className="flex justify-center flex-wrap flex-col items-center featured-collection w-full py-6 sm:py-10 sm:px-4 px-4">
+      <h2 className="sm:text-3xl text-2xl  text-center mb-6 sm:mb-12">{title}</h2>
 
-      <div className="w-full container max-w-6xl grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="w-full container max-w-6xl grid gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+
         {collection.products.nodes.map((product: any) => {
           const images = product.images?.nodes || [];
 
@@ -149,25 +158,28 @@ function FeaturedCollection({
                 
 
                 <div className="py-4 text-center">
-  <h3 className="text-lg font-medium text-left truncate mb-1">
-    {product.title}
-  </h3>
+ <h3 className="text-sm sm:text-lg font-medium text-left truncate mb-1">
+  {product.title}
+</h3>
+
 
   <div className="mt-1 flex justify-start items-center gap-2">
     {product.variants?.nodes[0]?.compareAtPrice?.amount &&
       product.variants?.nodes[0]?.compareAtPrice?.amount !==
         product.priceRange.minVariantPrice.amount && (
         <>
-          <span className="text-sm text-gray-500 line-through">
-            <Money data={product.variants.nodes[0].compareAtPrice} />
-          </span>
+          <span className="sm:text-sm text-xs text-gray-500 line-through">
+  ₹{Math.round(product.variants.nodes[0].compareAtPrice.amount)}
+</span>
 
-          <span className="text-base font-bold text-black">
-            <Money data={product.priceRange.minVariantPrice} />
-          </span>
+
+          <span className="sm:text-base text-sm font-bold text-black">
+  ₹{Math.round(product.priceRange.minVariantPrice.amount)}
+</span>
+
 
           {/* ✅ Discount Badge */}
-          <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
+          <span className="bg-red-600 text-white text-[10px] sm:text-xs font-semibold px-1 sm:px-2 py-1 rounded">
             {Math.round(
               (1 -
                 parseFloat(product.priceRange.minVariantPrice.amount) /
@@ -360,3 +372,7 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
     }
   }
 ` as const;
+
+
+
+
