@@ -1,0 +1,236 @@
+ .dyn-product-page {
+    max-width: 1250px;
+    width:100%;
+  }
+
+  /* Product Slider Main Image */
+  .dpp-main-img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+.accordion-toggle:hover {
+  color: #004E3B;
+}
+
+
+  /* Page Layout: 50-50 split */
+  #dynamic-product-page {
+    display: flex;
+    justify-content: center;
+  }
+
+
+.shifter-handle {
+  background: none !important;
+}
+  
+  .dpp-flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .dpp-left,
+  .dpp-right {
+    width: calc(50% - 20px);
+    box-sizing: border-box;
+  }
+
+  .dpp-left {
+    padding-right: 15px;
+  }
+
+  .dpp-right {
+    padding-left: 15px;
+  }
+  @media screen and (max-width: 782px) {
+  .gridlock .row {
+    width: 100%;
+  }
+    #dynamic-product-page {
+  margin: 0px 15px;
+}
+    .related-wrapper {
+  margin: 0px 15px;
+}
+    .key-benefits-wrapper {
+  margin: 0px 15px !important;
+}
+    .nutriseed-newsletter {
+  margin: 0 15px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
+}
+
+  @media screen and (max-width: 768px) {
+    .dpp-left,
+    .dpp-right {
+      width: 100%;
+      padding: 0;
+    }
+  }
+
+
+  /* heading and star section css  */
+.rating-box {
+  font-family: sans-serif;
+  color: #155c43; /* dark green */
+}
+
+
+
+  
+.stars-review-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.stars {
+  color: #f97316; /* orange stars */
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.stars .half {
+  color: #f97316;
+  display: inline-block;
+  transform: scaleX(0.5);
+  transform-origin: left;
+  overflow: hidden;
+}
+
+.review-text {
+  font-size: 15px;
+  color: #155c43;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  font-size: 16px;
+  margin-bottom: 6px;
+  position: relative;
+  padding-left: 20px;
+  color: #155c43;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.feature-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  background-image: url('https://cdn.shopify.com/s/files/1/0971/0000/files/Vector_5.png?v=1750661229');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+  .accordion-item {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.scroll-layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+.image-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  flex: 1;
+}
+
+.scrollable-info {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 100vh;
+  padding-left: 30px;
+  scroll-behavior: smooth;
+}
+
+  /* title  */
+  .heading_top h1 {
+  font-family: 'new_spiritsemibold';
+  font-weight: 700;
+  font-size: 42px;
+    line-height: 100%;
+}
+    .accordion-content {
+  color: #004E3B;
+}
+
+  .accordion-content p {
+  color: #004E3B !important;
+}
+  button:focus {
+  outline: none !important;
+  }
+  .accordion-toggle {
+  background: white !important;
+}
+    .metafield-multi_line_text_field {
+  font-size: 14px;
+  line-height: 20px;
+  text-shadow: none;
+  color: #004E3B;
+}
+  .rating-box {
+  margin: 15px 0;
+}
+.rating-box .ruk_rating_snippet {
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+}
+.ruk-icon-percentage-star--100:before,
+  .ruk-icon-percentage-star--50:before{
+    content: "\f005" !important;
+}
+.rating-box .ruk_rating_snippet i {
+    font-size: 16px !important;
+}
+.rating-box .ruk_rating_snippet span.ruk-rating-snippet-count {
+    color: #004e3b !important;
+    font-family: 'Ubuntu', sans-serif !important;
+    font-weight: 500;
+    font-size: 14px !important;
+    margin: -5px 0 0 4px;
+}
+.rc-container-wrapper.rc_container_wrapper {
+    display: none;
+}
+  .dpp-left {
+  overflow: hidden !important;
+}
+  @media(max-width:782px){
+    .heading_top h1 {
+  font-size: 36px;
+  line-height: 42px;
+}
+    .feature-list {
+  margin: 15px 0px;
+}
+  }
+  .shifter-navigation {
+  display: none !important;
+}
+#oneTimeBox .features {
+  display: none !important;
+}
+  
