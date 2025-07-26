@@ -4,32 +4,32 @@ import {Link} from 'react-router-dom'; // <-- Make sure this import exists
 const categories = [
   {
     label: 'GOWNS',
-    image: '/app/assets/CategoryImage/img1.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img3_2f049ed6-e52b-4932-aafe-eb3eacf67267.webp?v=1753567160',
     link: '/collections/new-in',
   },
   {
     label: 'CO-ORDS SET',
-    image: '/app/assets/CategoryImage/img2.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img2_69034c0e-3537-499a-9c59-d35b33631b14.webp?v=1753567160',
     link: '/collections/tops-tunics',
   },
   {
     label: 'SHARARA',
-    image: '/app/assets/CategoryImage/img3.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img4_da35e79a-7233-447a-b96e-67ca5c22c2a9.webp?v=1753567160',
     link: '/collections/women-dresses',
   },
   {
     label: 'JUMPSUIT',
-    image: '/app/assets/CategoryImage/img6.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img5_605f514e-c7a9-418b-a944-6d0633e191cd.webp?v=1753567160',
     link: '/collections/kurta-suit-sets',
   },
   {
     label: 'KURTA SETS',
-    image: '/app/assets/CategoryImage/img5.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img1_087eb51a-bf67-49da-8bf2-74307b40ee0e.webp?v=1753567158',
     link: '/collections/women-dresses',
   },
   {
     label: 'KURTA SETS',
-    image: '/app/assets/CategoryImage/img4.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img6_c9468091-1c6f-4956-9d8c-9a4304c69c8e.webp?v=1753567159',
     link: '/collections/tops-tunics',
   }
 ];

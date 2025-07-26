@@ -3,14 +3,14 @@
 import { Link } from '@remix-run/react';
 
 const categories = [
-  { name: 'KURTA', imageUrl: '/app/assets/CategoryGridImg/img1.webp', link: '/collections/new-in' },
-  { name: 'KURTA SETS', imageUrl: '/app/assets/CategoryGridImg/img2.webp', link: '/collections/new-in' },
-  { name: 'TOPS', imageUrl: '/app/assets/CategoryGridImg/img3.webp', link: '/collections/new-in' },
-  { name: 'DRESS', imageUrl: '/app/assets/CategoryGridImg/img4.webp', link: '/collections/new-in' },
-  { name: 'BOTTOM WEAR', imageUrl: '/app/assets/CategoryGridImg/img5.webp', link: '/collections/new-in' },
-  { name: 'CO-ORDS', imageUrl: '/app/assets/CategoryGridImg/img6.webp', link: '/collections/new-in' },
-  { name: 'SAREE', imageUrl: '/app/assets/CategoryGridImg/img7.webp', link: '/collections/new-in' },
-  { name: 'PRINTED KURTA', imageUrl: '/app/assets/CategoryGridImg/img8.webp', link: '/collections/new-in' },
+  { name: 'KURTA', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img1.webp?v=1753566496', link: '/collections/new-in' },
+  { name: 'KURTA SETS', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img2.webp?v=1753566496', link: '/collections/new-in' },
+  { name: 'TOPS', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img3.webp?v=1753566496', link: '/collections/new-in' },
+  { name: 'DRESS', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img4.webp?v=1753566496', link: '/collections/new-in' },
+  { name: 'BOTTOM WEAR', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img5.webp?v=1753566495', link: '/collections/new-in' },
+  { name: 'CO-ORDS', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img6.webp?v=1753566496', link: '/collections/new-in' },
+  { name: 'SAREE', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/img7.webp?v=1753566496', link: '/collections/new-in' },
+  { name: 'PRINTED KURTA', imageUrl: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/8.webp?v=1753566495', link: '/collections/new-in' },
 ];
 
 export default function CategoryGrid() {

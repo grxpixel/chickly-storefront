@@ -141,7 +141,7 @@ export default function Collection() {
 
       {/* Product Section - hide when drawer open */}
       <div className="collection-banner">
-        <img src="/app/assets/CTABAnner/new_arrival_banner_chicly_copy.jpg" alt="" />
+        <img src="https://cdn.shopify.com/s/files/1/0661/0495/1028/files/new_arrival_banner_chicly_copy.jpg?v=1753566353" alt="" />
       </div>
       <div className="flex flex-col md:flex-row px-4 py-6 gap-6">
       
