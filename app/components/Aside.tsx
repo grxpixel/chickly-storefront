@@ -14,7 +14,7 @@ type AsideContextValue = {
 };
 
 /**
- * A side bar component with Overlay
+
  * @example
  * ```jsx
  * <Aside type="search" heading="SEARCH">
