@@ -3,37 +3,37 @@ import { useRef } from 'react';
 const reviews = [
   {
     name: 'Khushi Bhatia',
-    image: '/app/assets/CustomerReviewImage/tes1.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/tes1.webp?v=1753566704',
     rating: 5,
     comment: 'I really like this. It looks classy. I prefer dresses with minimal embroidery, so this is perfect for me.',
   },
   {
     name: 'Nikki Kala',
-    image: '/app/assets/CustomerReviewImage/tes2.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/tes2.webp?v=1753566705',
     rating: 5,
     comment: 'Material quality was too good. Awesome colour..',
   },
   {
     name: 'Pratima Kukreja',
-    image: '/app/assets/CustomerReviewImage/tes3.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/tes3.webp?v=1753566705',
     rating: 5,
     comment: 'Amazing suit; the color is so beautiful, and the fit is perfect.',
   },
   {
     name: 'Natasha Goswami',
-    image: '/app/assets/CustomerReviewImage/tes4.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/tes4.webp?v=1753566705',
     rating: 5,
     comment: 'The dress is perfect. Go for it. The material is light weight and soft and you don’t feel like you’re wearing this and the look is great.',
   },
   {
     name: 'Mitali Sethi',
-    image: '/app/assets/CustomerReviewImage/tes5.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/tes5.webp?v=1753566705',
     rating: 5,
     comment: 'Nice dress with bright colour and good quality... happy to purchase it 🍑',
   },
     {
     name: 'Mitali Sethi',
-    image: '/app/assets/CustomerReviewImage/tes6.webp',
+    image: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/tes6.webp?v=1753566705',
     rating: 5,
     comment: 'Nice dress with bright colour and good quality... happy to purchase it 🍑',
   },

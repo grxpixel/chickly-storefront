@@ -4,14 +4,14 @@ const slides = [
   {
     id: 1,
     title: 'Slide One',
-    desktopImage: 'app/assets/HerosliderImage/desktopslider1.jpg',
-    mobileImage: 'app/assets/HerosliderImage/mob1.jpg'
+    desktopImage: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/desktopslider1.jpg?v=1753565773',
+    mobileImage: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/mob1.jpg?v=1753565778'
   },
   {
     id: 2,
     title: 'Slide Two',
-    desktopImage: 'app/assets/HerosliderImage/desktopslider2.jpg',
-    mobileImage: 'app/assets/HerosliderImage/mob2.jpg'
+    desktopImage: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/desktopslider1.jpg?v=1753565773',
+    mobileImage: 'https://cdn.shopify.com/s/files/1/0661/0495/1028/files/mob2.jpg?v=1753565779'
   },
   // {
   //   id: 3,
