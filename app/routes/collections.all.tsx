@@ -1,154 +1,141 @@
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, Link, type MetaFunction} from '@remix-run/react';
-import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
-import type {ProductItemFragment} from 'storefrontapi.generated';
-import {useVariantUrl} from '~/lib/variants';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {useLoaderData, useFetcher, Await} from '@remix-run/react';
+import {Suspense, useEffect, useRef, useState, useCallback} from 'react'; 
+import { collectionsLoader } from '~/components/CollectionPage/Loaders/collectionsLoader'; 
+import Filters from '~/components/CollectionPage/Filters/Filters';
+import Sort from '~/components/CollectionPage/Sort/Sort';
+import MobileSortOptions from '~/components/CollectionPage/Sort/MobileSortOptions';
+import ProductCard from '~/components/CollectionPage/Product/ProductCard';
+import LoadingSpinner from '~/components/CollectionPage/Product/LoadingSpinner';
 
-export const meta: MetaFunction<typeof loader> = () => {
-  return [{title: `Hydrogen | Products`}];
-};
+export const loader = collectionsLoader;
+export const meta = () => [{title: 'All Products'}];
 
-export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
+export default function CollectionsAllPage() {
+  const {products, discountFilters, searchParams} = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
+  const observer = useRef<IntersectionObserver>();
+  const [extraItems, setExtraItems] = useState<any[]>([]);
 
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
-  return defer({...deferredData, ...criticalData});
-}
+  const lastElement = useCallback((node: Element | null, pageInfo?: any) => {
+    if (fetcher.state !== "idle") return;
+    if (observer.current) observer.current.disconnect();
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context, request}: LoaderFunctionArgs) {
-  const {storefront} = context;
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
-  });
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && pageInfo?.hasNextPage) {
+        const params = new URLSearchParams(searchParams);
+        params.set('after', pageInfo.endCursor);
+        fetcher.load(`?${params.toString()}`);
+      }
+    });
 
-  const [{products}] = await Promise.all([
-    storefront.query(CATALOG_QUERY, {
-      variables: {...paginationVariables},
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-  return {products};
-}
+    if (node) observer.current.observe(node);
+  }, [fetcher, searchParams]);
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  return {};
-}
+  useEffect(() => {
+    const data = fetcher.data as any;
+    if (data?.products?.products?.nodes?.length > 0) {
+      setExtraItems(prev => [...prev, ...data.products.products.nodes]);
+    }
+  }, [fetcher.data]);
 
-export default function Collection() {
-  const {products} = useLoaderData<typeof loader>();
+  const calculateDiscount = (compareAt: number, price: number) => {
+    if (!compareAt || compareAt <= price) return 0;
+    return Math.round(((compareAt - price) / compareAt) * 100);
+  };
 
   return (
-    <div className="collection">
-      <h1 className='text-red-500'>Products</h1>
-      <PaginatedResourceSection
-        connection={products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        )}
-      </PaginatedResourceSection>
+    <div className="max-w-screen mx-auto sm:py-6">
+      {/* Mobile Top Sticky Filter & Sort Buttons */}
+      <div className="sticky bg-white top-0 z-30 flex justify-between mb-4 md:hidden">
+        <button onClick={() => setIsFilterOpen(true)} className="border-b border-black/20 p-3 w-1/2 flex justify-center items-center gap-2"><img src="/app/assets/Icons/Vector_11.png" alt="" />Filters</button>
+        <button onClick={() => setIsSortOpen(true)} className="border-b border-black/20 border-l p-3 w-1/2"><span className="text-gray-600">⇅</span>Sort</button>
+      </div>
+
+      {/* Mobile Filter Sidebar */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 z-50 flex md:hidden backdrop-blur-[2px] bg-black/5">
+          <div className="w-[80%] max-w-sm bg-white h-full transform translate-x-0 transition-transform duration-300 ease-in-out">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              <button onClick={() => setIsFilterOpen(false)} className="text-xl font-bold">✖</button>
+            </div>
+            <div className="p-4 overflow-y-auto h-full">
+              <Filters />
+            </div>
+          </div>
+          <div className="flex-1" onClick={() => setIsFilterOpen(false)} />
+        </div>
+      )}
+
+      {/* Mobile Sort Bottom Sheet */}
+      {isSortOpen && (
+        <div className="fixed inset-0 z-50 flex md:hidden items-end justify-center backdrop-blur-[2px] bg-black/5">
+          <div className="w-full bg-white rounded-t-xl max-h-[80vh] transition-transform duration-300 ease-in-out translate-y-0">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-lg font-semibold">Sort By</h2>
+              <button onClick={() => setIsSortOpen(false)} className="text-xl font-bold">✖</button>
+            </div>
+            <div className="p-4">
+              <MobileSortOptions onClose={() => setIsSortOpen(false)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Layout - Always show products */}
+      <div className="flex gap-8 px-4 py-6">
+        {/* Desktop Filters */}
+        <div className="hidden md:block w-72 sticky top-24 h-fit flex-col">
+          <Filters />
+        </div>
+
+        <div className="flex-1">
+          <div className="hidden md:flex justify-end mb-6">
+            <Sort />
+          </div>
+
+          <Suspense fallback={<LoadingSpinner />}>
+            <Await resolve={products}>
+              {(data: any) => {
+                const allItems = [...data.products.nodes, ...extraItems];
+
+                const finalFilteredProducts = allItems.filter((product: any) => {
+                  const variant = product.variants.nodes[0];
+                  const minPrice = parseFloat(product.priceRange.minVariantPrice.amount);
+                  const compareAt = variant?.compareAtPrice?.amount ? parseFloat(variant.compareAtPrice.amount) : 0;
+                  const discountValue = calculateDiscount(compareAt, minPrice);
+
+                  if (discountFilters?.length) {
+                    const discountMatch = discountFilters.some((d: string) => discountValue >= parseInt(d));
+                    if (!discountMatch) return false;
+                  }
+
+                  return true;
+                });
+
+                return (
+                  <>
+                    <div className="grid gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      {finalFilteredProducts.map((product, index) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
+                    </div>
+
+                    {data.products.pageInfo?.hasNextPage && (
+                      <div ref={(node) => lastElement(node, data.products.pageInfo)} className="flex justify-center my-10">
+                        <LoadingSpinner />
+                      </div>
+                    )}
+                  </>
+                );
+              }}
+            </Await>
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 }
-
-function ProductItem({
-  product,
-  loading,
-}: {
-  product: ProductItemFragment;
-  loading?: 'eager' | 'lazy';
-}) {
-  const variantUrl = useVariantUrl(product.handle);
-  return (
-    <Link
-      className="product-item"
-      key={product.id}
-      prefetch="intent"
-      to={variantUrl}
-    >
-      {product.featuredImage && (
-        <Image
-          alt={product.featuredImage.altText || product.title}
-          aspectRatio="1/1"
-          data={product.featuredImage}
-          loading={loading}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
-    </Link>
-  );
-}
-
-const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
-    amount
-    currencyCode
-  }
-  fragment ProductItem on Product {
-    id
-    handle
-    title
-    featuredImage {
-      id
-      altText
-      url
-      width
-      height
-    }
-    priceRange {
-      minVariantPrice {
-        ...MoneyProductItem
-      }
-      maxVariantPrice {
-        ...MoneyProductItem
-      }
-    }
-  }
-` as const;
-
-// NOTE: https://shopify.dev/docs/api/storefront/2024-01/objects/product
-const CATALOG_QUERY = `#graphql
-  query Catalog(
-    $country: CountryCode
-    $language: LanguageCode
-    $first: Int
-    $last: Int
-    $startCursor: String
-    $endCursor: String
-  ) @inContext(country: $country, language: $language) {
-    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
-      nodes {
-        ...ProductItem
-      }
-      pageInfo {
-        hasPreviousPage
-        hasNextPage
-        startCursor
-        endCursor
-      }
-    }
-  }
-  ${PRODUCT_ITEM_FRAGMENT}
-` as const;

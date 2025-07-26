@@ -1,10 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 
 const slides = [
-  { id: 1, title: 'Slide One', image: 'app/assets/HerosliderImage/desktopslide1.webp' },
-  { id: 2, title: 'Slide Two', image: 'app/assets/HerosliderImage/desktopslide2.webp' },
-  { id: 3, title: 'Slide Three', image: 'app/assets/HerosliderImage/desktopslide3.webp' },
+  {
+    id: 1,
+    title: 'Slide One',
+    desktopImage: 'app/assets/HerosliderImage/desktopslider1.jpg',
+    mobileImage: 'app/assets/HerosliderImage/mob1.jpg'
+  },
+  {
+    id: 2,
+    title: 'Slide Two',
+    desktopImage: 'app/assets/HerosliderImage/desktopslider2.jpg',
+    mobileImage: 'app/assets/HerosliderImage/mob2.jpg'
+  },
+  // {
+  //   id: 3,
+  //   title: 'Slide Three',
+  //   desktopImage: 'app/assets/HerosliderImage/desktopslide3.webp',
+  //   mobileImage: 'app/assets/HerosliderImage/mob3.webp'
+  // }
 ];
+
 
 export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
@@ -47,22 +63,31 @@ export default function HeroSlider() {
   };
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden">
+    <div className="relative w-full h-[450px] sm:h-[600px] overflow-hidden">
       {/* Slides */}
       {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute w-full h-full transition-opacity duration-1000 ease-in-out ${
-            index === current ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 z-10 pointer-events-none'
-          }`}
-        >
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ))}
+  <div
+    key={slide.id}
+    className={`absolute w-full h-full transition-opacity duration-1000 ease-in-out ${
+      index === current ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 z-10 pointer-events-none'
+    }`}
+  >
+    {/* Desktop Image */}
+    <img
+      src={slide.desktopImage}
+      alt={slide.title}
+      className="hidden sm:block w-full h-full object-cover"
+    />
+    
+    {/* Mobile Image */}
+    <img
+      src={slide.mobileImage}
+      alt={slide.title}
+      className="block sm:hidden w-full h-full object-cover"
+    />
+  </div>
+))}
+
 
       {/* Long Dot Progress Bars */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3 w-[200px] z-[99]">

@@ -9,7 +9,7 @@ import {
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
+import ProductImage from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
@@ -99,7 +99,10 @@ export default function Product() {
 
   return (
     <div className="product">
-      <ProductImage image={selectedVariant?.image} />
+      <ProductImage
+  images={selectedVariant?.image ? [selectedVariant.image] : []}
+  selectedVariantImage={selectedVariant?.image}
+/>
       <div className="product-main">
         <h1>{title}</h1>
         <ProductPrice
@@ -110,6 +113,7 @@ export default function Product() {
         <ProductForm
           productOptions={productOptions}
           selectedVariant={selectedVariant}
+          variants={product.adjacentVariants}
         />
         <br />
         <br />

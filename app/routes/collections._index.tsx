@@ -1,65 +1,105 @@
-import {useLoaderData, Link} from '@remix-run/react';
+import {
+  useLoaderData,
+  useFetcher,
+  Link,
+} from '@remix-run/react';
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {getPaginationVariables, Image} from '@shopify/hydrogen';
+import {Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {useEffect, useState, useRef} from 'react';
 
-export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
+const PAGE_SIZE = 10;
 
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
+export async function loader({context, request}: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const after = url.searchParams.get('after') || undefined;
 
-  return defer({...deferredData, ...criticalData});
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context, request}: LoaderFunctionArgs) {
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 4,
+  const {collections} = await context.storefront.query(COLLECTIONS_QUERY, {
+    variables: {
+      first: PAGE_SIZE,
+      after,
+    },
   });
 
-  const [{collections}] = await Promise.all([
-    context.storefront.query(COLLECTIONS_QUERY, {
-      variables: paginationVariables,
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-
-  return {collections};
-}
-
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  return {};
+  return defer({collections});
 }
 
 export default function Collections() {
-  const {collections} = useLoaderData<typeof loader>();
+  const initial = useLoaderData<typeof loader>();
+  const fetcher = useFetcher<typeof loader>();
+
+  const [collections, setCollections] = useState<CollectionFragment[]>(
+    initial.collections.nodes ?? []
+  );
+  const [cursor, setCursor] = useState<string | undefined>(
+    initial.collections.pageInfo?.endCursor ?? undefined
+  );
+  const [hasNextPage, setHasNextPage] = useState(
+    initial.collections.pageInfo?.hasNextPage ?? false
+  );
+  const [lastFetchedCursor, setLastFetchedCursor] = useState<string | null>(null);
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const fetched = fetcher.data?.collections;
+
+    if (
+      fetched &&
+      fetched.nodes &&
+      fetched.pageInfo?.endCursor !== lastFetchedCursor
+    ) {
+      setCollections((prev) => [...prev, ...fetched.nodes]);
+      setCursor(fetched.pageInfo?.endCursor);
+      setHasNextPage(fetched.pageInfo?.hasNextPage ?? false);
+      setLastFetchedCursor(fetched.pageInfo?.endCursor ?? null);
+    }
+  }, [fetcher.data, lastFetchedCursor]);
+
+  useEffect(() => {
+    if (!hasNextPage || !loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && cursor) {
+          fetcher.submit({after: cursor}, {method: 'get', action: '/collections'});
+        }
+      },
+      {
+        rootMargin: '200px',
+      }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [cursor, hasNextPage, fetcher]);
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
-      <PaginatedResourceSection
-        connection={collections}
-        resourcesClassName="collections-grid"
-      >
-        {({node: collection, index}) => (
+    <div className="py-10 px-4 md:px-10 bg-white">
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">
+        Explore Our Collections
+      </h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {collections.map((collection, index) => (
           <CollectionItem
             key={collection.id}
             collection={collection}
             index={index}
           />
-        )}
-      </PaginatedResourceSection>
+        ))}
+      </div>
+
+      {hasNextPage && (
+        <div className="text-center mt-10" ref={loadMoreRef}>
+          <div className="flex justify-center items-center space-x-2">
+            <span className="w-5 h-5 border-2 border-t-transparent border-black rounded-full animate-spin"></span>
+            <span className="text-sm text-gray-600">Loading more...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -73,21 +113,45 @@ function CollectionItem({
 }) {
   return (
     <Link
-      className="collection-item"
-      key={collection.id}
       to={`/collections/${collection.handle}`}
       prefetch="intent"
+      className="relative group overflow-hidden rounded-lg shadow-sm hover:shadow-md bg-white transition-shadow duration-300"
     >
-      {collection?.image && (
+      {collection.image ? (
         <Image
-          alt={collection.image.altText || collection.title}
+          alt={collection.image.altText ?? collection.title}
           aspectRatio="1/1"
           data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
+          loading={index < 3 ? 'eager' : 'lazy'}
           sizes="(min-width: 45em) 400px, 100vw"
+          className="w-full h-full object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-105 animate-fadeIn"
         />
+      ) : (
+        <div className="w-full aspect-square bg-gray-300 flex items-center justify-center">
+          <div className="text-center">
+            <svg
+              className="mx-auto mb-2"
+              width="48"
+              height="48"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            <p className="text-gray-500 text-sm italic">No image</p>
+          </div>
+        </div>
       )}
-      <h5>{collection.title}</h5>
+
+      <div className="absolute bottom-0 w-full bg-black/50 text-white text-center py-3 transition-opacity duration-300 opacity-90 group-hover:opacity-100">
+        <h5 className="text-sm md:text-base font-semibold">{collection.title}</h5>
+      </div>
     </Link>
   );
 }
@@ -105,29 +169,23 @@ const COLLECTIONS_QUERY = `#graphql
       height
     }
   }
+
   query StoreCollections(
     $country: CountryCode
-    $endCursor: String
-    $first: Int
     $language: LanguageCode
-    $last: Int
-    $startCursor: String
+    $first: Int!
+    $after: String
   ) @inContext(country: $country, language: $language) {
-    collections(
-      first: $first,
-      last: $last,
-      before: $startCursor,
-      after: $endCursor
-    ) {
+    collections(first: $first, after: $after) {
       nodes {
         ...Collection
       }
       pageInfo {
         hasNextPage
-        hasPreviousPage
-        startCursor
         endCursor
       }
     }
   }
 ` as const;
+
+

@@ -92,7 +92,7 @@ section {
 fieldset {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
   padding: 1rem;
 }
 
@@ -146,4 +146,59 @@ code {
 
 .font-filson {
   font-family: Filson Pro, sans-serif;
+}
+
+.font-amiri {
+  font-family: Amiri, serif;
+}
+
+.font-poppins {
+  font-family: Poppins, sans-serif;
+}
+.add-to-cart-button form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.add-to-cart-button button {
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 300ms ease-out forwards;
+}
+
+
+/* Add this in your global CSS: */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-in-out;
 }
