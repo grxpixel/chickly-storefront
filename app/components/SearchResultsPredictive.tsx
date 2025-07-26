@@ -32,22 +32,14 @@ type PartialPredictiveSearchResult<
 > = Pick<PredictiveSearchItems, ItemType> &
   Pick<SearchResultsPredictiveArgs, ExtraProps>;
 
-type SearchResultsPredictiveProps = {
-  children: (args: SearchResultsPredictiveArgs) => React.ReactNode;
-};
-
-/**
- * Component that renders predictive search results
- */
 export function SearchResultsPredictive({
   children,
-}: SearchResultsPredictiveProps) {
+}: {
+  children: (args: SearchResultsPredictiveArgs) => React.ReactNode;
+}) {
   const aside = useAside();
   const {term, inputRef, fetcher, total, items} = usePredictiveSearch();
 
-  /*
-   * Utility that resets the search input
-   */
   function resetInput() {
     if (inputRef.current) {
       inputRef.current.blur();
@@ -55,9 +47,6 @@ export function SearchResultsPredictive({
     }
   }
 
-  /**
-   * Utility that resets the search input and closes the search aside
-   */
   function closeSearch() {
     resetInput();
     aside.close();
@@ -73,14 +62,7 @@ export function SearchResultsPredictive({
   });
 }
 
-SearchResultsPredictive.Articles = SearchResultsPredictiveArticles;
-SearchResultsPredictive.Collections = SearchResultsPredictiveCollections;
-SearchResultsPredictive.Pages = SearchResultsPredictivePages;
-SearchResultsPredictive.Products = SearchResultsPredictiveProducts;
-SearchResultsPredictive.Queries = SearchResultsPredictiveQueries;
-SearchResultsPredictive.Empty = SearchResultsPredictiveEmpty;
-
-function SearchResultsPredictiveArticles({
+SearchResultsPredictive.Articles = function ({
   term,
   articles,
   closeSearch,
@@ -88,30 +70,34 @@ function SearchResultsPredictiveArticles({
   if (!articles.length) return null;
 
   return (
-    <div className="predictive-search-result" key="articles">
-      <h5>Articles</h5>
-      <ul>
+    <div className="space-y-2 mb-6" key="articles">
+      <h5 className="text-base font-semibold text-gray-700 border-b pb-1 mb-2">
+        Articles
+      </h5>
+      <ul className="space-y-2">
         {articles.map((article) => {
-          const articleUrl = urlWithTrackingParams({
+          const url = urlWithTrackingParams({
             baseUrl: `/blogs/${article.blog.handle}/${article.handle}`,
             trackingParams: article.trackingParameters,
             term: term.current ?? '',
           });
 
           return (
-            <li className="predictive-search-result-item" key={article.id}>
-              <Link onClick={closeSearch} to={articleUrl}>
+            <li
+              className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded"
+              key={article.id}
+            >
+              <Link to={url} onClick={closeSearch} className="flex items-center gap-3">
                 {article.image?.url && (
                   <Image
                     alt={article.image.altText ?? ''}
                     src={article.image.url}
                     width={50}
                     height={50}
+                    className="rounded border"
                   />
                 )}
-                <div>
-                  <span>{article.title}</span>
-                </div>
+                <span className="text-sm font-medium text-gray-800">{article.title}</span>
               </Link>
             </li>
           );
@@ -119,9 +105,9 @@ function SearchResultsPredictiveArticles({
       </ul>
     </div>
   );
-}
+};
 
-function SearchResultsPredictiveCollections({
+SearchResultsPredictive.Collections = function ({
   term,
   collections,
   closeSearch,
@@ -129,30 +115,34 @@ function SearchResultsPredictiveCollections({
   if (!collections.length) return null;
 
   return (
-    <div className="predictive-search-result" key="collections">
-      <h5>Collections</h5>
-      <ul>
+    <div className="space-y-2 mb-6" key="collections">
+      <h5 className="text-base font-semibold text-gray-700 border-b pb-1 mb-2">
+        Collections
+      </h5>
+      <ul className="space-y-2">
         {collections.map((collection) => {
-          const collectionUrl = urlWithTrackingParams({
+          const url = urlWithTrackingParams({
             baseUrl: `/collections/${collection.handle}`,
             trackingParams: collection.trackingParameters,
             term: term.current,
           });
 
           return (
-            <li className="predictive-search-result-item" key={collection.id}>
-              <Link onClick={closeSearch} to={collectionUrl}>
+            <li
+              className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded"
+              key={collection.id}
+            >
+              <Link to={url} onClick={closeSearch} className="flex items-center gap-3">
                 {collection.image?.url && (
                   <Image
                     alt={collection.image.altText ?? ''}
                     src={collection.image.url}
                     width={50}
                     height={50}
+                    className="rounded border"
                   />
                 )}
-                <div>
-                  <span>{collection.title}</span>
-                </div>
+                <span className="text-sm font-medium text-gray-800">{collection.title}</span>
               </Link>
             </li>
           );
@@ -160,9 +150,9 @@ function SearchResultsPredictiveCollections({
       </ul>
     </div>
   );
-}
+};
 
-function SearchResultsPredictivePages({
+SearchResultsPredictive.Pages = function ({
   term,
   pages,
   closeSearch,
@@ -170,22 +160,25 @@ function SearchResultsPredictivePages({
   if (!pages.length) return null;
 
   return (
-    <div className="predictive-search-result" key="pages">
-      <h5>Pages</h5>
-      <ul>
+    <div className="space-y-2 mb-6" key="pages">
+      <h5 className="text-base font-semibold text-gray-700 border-b pb-1 mb-2">
+        Pages
+      </h5>
+      <ul className="space-y-2">
         {pages.map((page) => {
-          const pageUrl = urlWithTrackingParams({
+          const url = urlWithTrackingParams({
             baseUrl: `/pages/${page.handle}`,
             trackingParams: page.trackingParameters,
             term: term.current,
           });
 
           return (
-            <li className="predictive-search-result-item" key={page.id}>
-              <Link onClick={closeSearch} to={pageUrl}>
-                <div>
-                  <span>{page.title}</span>
-                </div>
+            <li
+              className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded"
+              key={page.id}
+            >
+              <Link to={url} onClick={closeSearch}>
+                <span className="text-sm font-medium text-gray-800">{page.title}</span>
               </Link>
             </li>
           );
@@ -193,9 +186,9 @@ function SearchResultsPredictivePages({
       </ul>
     </div>
   );
-}
+};
 
-function SearchResultsPredictiveProducts({
+SearchResultsPredictive.Products = function ({
   term,
   products,
   closeSearch,
@@ -203,32 +196,39 @@ function SearchResultsPredictiveProducts({
   if (!products.length) return null;
 
   return (
-    <div className="predictive-search-result" key="products">
-      <h5>Products</h5>
-      <ul>
+    <div className="space-y-2 mb-6" key="products">
+      <h5 className="text-base font-semibold text-gray-700 border-b pb-1 mb-2">
+        Products
+      </h5>
+      <ul className="space-y-2">
         {products.map((product) => {
-          const productUrl = urlWithTrackingParams({
+          const url = urlWithTrackingParams({
             baseUrl: `/products/${product.handle}`,
             trackingParams: product.trackingParameters,
             term: term.current,
           });
 
-          const price = product?.selectedOrFirstAvailableVariant?.price;
-          const image = product?.selectedOrFirstAvailableVariant?.image;
+          const price = product.selectedOrFirstAvailableVariant?.price;
+          const image = product.selectedOrFirstAvailableVariant?.image;
+
           return (
-            <li className="predictive-search-result-item" key={product.id}>
-              <Link to={productUrl} onClick={closeSearch}>
+            <li
+              className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded"
+              key={product.id}
+            >
+              <Link to={url} onClick={closeSearch} className="flex items-center gap-3">
                 {image && (
                   <Image
                     alt={image.altText ?? ''}
                     src={image.url}
                     width={50}
                     height={50}
+                    className="rounded border"
                   />
                 )}
-                <div>
-                  <p>{product.title}</p>
-                  <small>{price && <Money data={price} />}</small>
+                <div className="flex flex-col">
+                  <p className="text-sm font-medium text-gray-800">{product.title}</p>
+                  <small className="text-xs text-gray-600">{price && <Money data={price} />}</small>
                 </div>
               </Link>
             </li>
@@ -237,9 +237,9 @@ function SearchResultsPredictiveProducts({
       </ul>
     </div>
   );
-}
+};
 
-function SearchResultsPredictiveQueries({
+SearchResultsPredictive.Queries = function ({
   queries,
   queriesDatalistId,
 }: PartialPredictiveSearchResult<'queries', never> & {
@@ -249,48 +249,35 @@ function SearchResultsPredictiveQueries({
 
   return (
     <datalist id={queriesDatalistId}>
-      {queries.map((suggestion) => {
-        if (!suggestion) return null;
-
-        return <option key={suggestion.text} value={suggestion.text} />;
-      })}
+      {queries.map((q) => q && <option key={q.text} value={q.text} />)}
     </datalist>
   );
-}
+};
 
-function SearchResultsPredictiveEmpty({
+SearchResultsPredictive.Empty = function ({
   term,
 }: {
   term: React.MutableRefObject<string>;
 }) {
-  if (!term.current) {
-    return null;
-  }
+  if (!term.current) return null;
 
   return (
-    <p>
-      No results found for <q>{term.current}</q>
-    </p>
+    <div className="text-center text-gray-500 py-10">
+      <p className="text-sm">No results found for</p>
+      <p className="text-md font-semibold text-gray-700 mt-1">&ldquo;{term.current}&rdquo;</p>
+    </div>
   );
-}
+};
 
-/**
- * Hook that returns the predictive search results and fetcher and input ref.
- * @example
- * '''ts
- * const { items, total, inputRef, term, fetcher } = usePredictiveSearch();
- * '''
- **/
 function usePredictiveSearch(): UsePredictiveSearchReturn {
   const fetcher = useFetcher<PredictiveSearchReturn>({key: 'search'});
   const term = useRef<string>('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  if (fetcher?.state === 'loading') {
+  if (fetcher.state === 'loading') {
     term.current = String(fetcher.formData?.get('q') || '');
   }
 
-  // capture the search input element as a ref
   useEffect(() => {
     if (!inputRef.current) {
       inputRef.current = document.querySelector('input[type="search"]');

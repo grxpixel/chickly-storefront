@@ -3,6 +3,10 @@ import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import {json, type LoaderFunctionArgs, type ActionFunctionArgs} from '@shopify/remix-oxygen';
 import {CartMain} from '~/components/CartMain';
+import { CartPage } from '~/components/CartPage';
+
+
+
 
 export const meta: MetaFunction = () => {
   return [{title: `Hydrogen | Cart`}];
@@ -104,7 +108,8 @@ export default function Cart() {
   return (
     <div className="cart">
       <h1>Cart</h1>
-      <CartMain layout="page" cart={cart} />
+      dasfjkasdkj
+      <CartPage layout="page" cart={cart} />
     </div>
   );
 }

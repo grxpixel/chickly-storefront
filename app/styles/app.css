@@ -1,11 +1,19 @@
 :root {
-  --aside-width: 400px;
+  --aside-width: 500px;
   --cart-aside-summary-height-with-discount: 300px;
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
   --header-height: 64px;
-  --color-dark: #000;
+  --color-dark: #c6c6c6;
   --color-light: #fff;
+}
+
+@media(max-width:782px){
+  :root {
+  --aside-width: 350px;
+  --color-dark: #c6c6c6;
+  --color-light: #fff;
+}
 }
 
 img {
@@ -97,7 +105,7 @@ aside li {
   transition: opacity 400ms ease-in-out;
   transition: opacity 400ms;
   visibility: hidden;
-  z-index: 10;
+  z-index: 99;
 }
 
 .overlay .close-outside {
@@ -126,6 +134,7 @@ aside li {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
+  z-index: 9999;
 }
 /* reveal aside */
 .overlay.expanded aside {
@@ -229,7 +238,7 @@ button.reset:hover:not(:has(> *)) {
 */
 .cart-main {
   height: 100%;
-  max-height: calc(100vh - var(--cart-aside-summary-height));
+  max-height: 100vh;
   overflow-y: auto;
   width: auto;
 }

@@ -63,7 +63,7 @@ export function Footer({
               {/* logo and Social */}
               <div className="space-y-6">
                 <img
-                  src="app/assets/logo/logo.png"
+                  src="/app/assets/logo/logo.png"
                   alt="Logo"
                   className="w-[150px] h-auto filter invert brightness-0"
                 />

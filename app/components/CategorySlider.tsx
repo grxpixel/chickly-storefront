@@ -50,8 +50,8 @@ export default function CategorySlider() {
   };
 
   return (
-    <div className="w-full py-10 px-4">
-      <h2 className="text-3xl text-center mb-12">Categories</h2>
+    <div className="w-full py-6 sm:py-10 sm:px-4 px-4">
+      <h2 className="sm:text-3xl text-2xl  text-center mb-6 sm:mb-12">Categories</h2>
 
       <div className="relative">
         <button
@@ -62,20 +62,21 @@ export default function CategorySlider() {
         </button>
 
         <div
-          ref={sliderRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar px-8"
-        >
+  ref={sliderRef}
+  className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar px-8 snap-x snap-mandatory"
+>
+
           {categories.map((cat, index) => (
             <Link
-              to={cat.link}
-              key={index}
-              className="min-w-[200px] sm:min-w-[250px] lg:min-w-[280px] flex-shrink-0"
-            >
-              <div className="rounded-2xl overflow-hidden h-[400px] relative">
+  to={cat.link}
+  key={index}
+  className="min-w-[200px] w-[200px] sm:min-w-[250px] lg:min-w-[280px] flex-shrink-0 snap-start"
+>
+              <div className="rounded-2xl overflow-hidden h-[300px] sm:h-[400px]  relative">
                 <img
                   src={cat.image}
                   alt={cat.label}
-                  className="w-full h-[400px] object-cover"
+                  className="w-full h-[300px] sm:h-[400px] object-cover"
                 />
                 <p className="mt-3 text-center collection-text font-medium uppercase absolute">
                   {cat.label}

@@ -69,19 +69,20 @@ export default function CustomerReviewSlider() {
 
         {/* Scrollable Container */}
         <div
-          ref={sliderRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar px-8 "
-        >
+  ref={sliderRef}
+  className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar px-4 snap-x snap-mandatory"
+>
+
           {reviews.map((review, index) => (
-            <div
-              key={index}
-              className="w-[200px] sm:min-w-[200px] lg:w-[280px] flex-shrink-0 mb-1.5"
-              
-            >
+           <div
+  key={index}
+  className="w-[200px] sm:min-w-[200px] lg:w-[280px] flex-shrink-0 mb-1.5 snap-start"
+>
+
               <img
                 src={review.image}
                 alt={review.name}
-                className="w-full h-[350px] object-cover !rounded-2xl"
+                className="w-full h-[250px] sm:h-[350px] object-cover !rounded-2xl"
               />
               <div className="review-content" style={{
       boxShadow: '0px 1px 4px -1px #ed6078',
