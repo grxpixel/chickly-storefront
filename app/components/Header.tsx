@@ -70,7 +70,7 @@ export function Header({
 
   {/* Center: Logo */}
   <NavLink prefetch="intent" to="/" className="text-2xl tracking-normal">
-    <img src="/app/assets/logo/logo.png" alt="Logo" className="inline-block w-[100px] h-auto" />
+    <img src="/app/assets/logo.png" alt="Logo" className="inline-block w-[100px] h-auto" />
   </NavLink>
 
   {/* Right: CTAs */}
@@ -96,7 +96,7 @@ export function Header({
               isScrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text[28px]'
             }`}
           >
-            <img src="/app/assets/logo/logo.png" alt="Logo" className="inline-block w-[150px] h-auto ml-2" />
+            <img src="/app/assets/logo.png" alt="Logo" className="inline-block w-[150px] h-auto ml-2" />
           </NavLink>
           {/* desktop navigation  */}
           <div className="hidden lg:flex flex-1-px-12 ">
